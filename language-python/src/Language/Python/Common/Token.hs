@@ -88,6 +88,8 @@ data Token
    | NonLocalToken { token_span :: !SrcSpan }                     -- ^ Keyword: \'nonlocal\' (Python 3.x only)
    | AsyncToken { token_span :: !SrcSpan }                        -- ^ Keyword: \'async\' (Python 3.x only)
    | AwaitToken { token_span :: !SrcSpan }                        -- ^ Keyword: \'await\' (Python 3.x only)
+   | MatchToken { token_span :: !SrcSpan }                       -- ^ Keyword: \'match\' (Python 3.x only)
+   | CaseToken { token_span :: !SrcSpan }                        -- ^ Keyword: \'case\' (Python 3.x only)
    -- Version 2.x only:
    | PrintToken { token_span :: !SrcSpan }                        -- ^ Keyword: \'print\'. (Python 2.x only)
    | ExecToken { token_span :: !SrcSpan }                         -- ^ Keyword: \'exec\'. (Python 2.x only)
@@ -287,6 +289,8 @@ classifyToken token =
       NotEqualsToken {} -> Operator
       NotEqualsV2Token {} -> Operator
       LineJoinToken {} -> Layout
+      MatchToken {} -> Keyword
+      CaseToken {} -> Keyword
       EOFToken {} -> Layout  -- maybe a spurious classification.
 
 -- | Produce a string from a token which is suitable for printing as Python concrete syntax.
@@ -392,4 +396,6 @@ tokenString token =
       NotEqualsToken {} -> "!="
       NotEqualsV2Token {} -> "<>"
       LineJoinToken {} -> "\\"
+      MatchToken {} -> "match"
+      CaseToken {} -> "case"
       EOFToken {} -> ""

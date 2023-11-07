@@ -128,4 +128,6 @@ instance Pretty Token where
         TildeToken {} -> text "~"
         NotEqualsToken {} -> text "!="
         NotEqualsV2Token {} -> text "<>"
+        MatchToken {} -> text "match"
+        CaseToken {} -> text "case"
         EOFToken {} -> text "end of input"

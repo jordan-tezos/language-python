@@ -90,6 +90,7 @@ import Data.Maybe (isJust, maybeToList)
    'await'         { AwaitToken {} }
    'break'         { BreakToken {} }
    'bytestring'    { ByteStringToken {} }
+   'case'          { CaseToken {} }
    'class'         { ClassToken {} }
    'continue'      { ContinueToken {} }
    'dedent'        { DedentToken {} }
@@ -113,6 +114,7 @@ import Data.Maybe (isJust, maybeToList)
    'integer'       { IntegerToken {} }
    'is'            { IsToken {} }
    'lambda'        { LambdaToken {} }
+   'match'         { MatchToken {} }
    'NEWLINE'       { NewlineToken {} }
    'None'          { NoneToken {} }
    'nonlocal'      { NonLocalToken {} }
@@ -622,6 +624,20 @@ with_stmt : 'with' sepOptEndBy(with_item, ',') ':' suite
 
 with_item :: { (ExprSpan, Maybe ExprSpan) }
 with_item: pair(test,opt(right('as',expr))) { $1 }
+
+-- match_stmt: 'match' test ':' suite ( 'case' pattern ':' suite )+
+match_stmt :: { StatementSpan }
+match_stmt : 'match' test ':' many1(match_case)
+             { AST.Match $2 (reverse $4) (spanning (spanning $1 $4) (last $4)) }
+
+-- match_case: 'case' pattern ':' suite
+match_case :: { MatchCaseSpan }
+match_case : 'case' pattern ':' suite
+             { AST.MatchCase $2 (reverse $4) (spanning $1 $4) }
+
+-- pattern: (For simplicity, just using expr for now)
+pattern :: { PatternSpan }
+pattern : expr { AST.PatternExpr $1 }
 
 -- except_clause: 'except' [test ['as' NAME]]
 -- XXX is this a bug in the grammar? In the online does the target is more complex than a NAME.

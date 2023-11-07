@@ -154,6 +154,9 @@ instance Pretty (Statement a) where
       text "exec" <+> pretty e <+>
       maybe empty (\ (globals, next) -> text "in" <+> pretty globals <+>
       maybe empty (\locals -> comma <+> pretty locals) next) gls
+   pretty (Match { match_subject = subject, match_cases = cases }) =
+      text "match" <+> pretty subject <> colon $+$
+      indent (vcat (map pretty cases))
 
 prettyWithContext :: (Expr a, Maybe (Expr a)) -> Doc
 prettyWithContext (e, Nothing) = pretty e
@@ -332,3 +335,11 @@ instance Pretty (AssignOp a) where
    pretty (RightShiftAssign {}) = text ">>="
    pretty (FloorDivAssign {}) = text "//="
    pretty (MatrixMultAssign {}) = text "@="
+
+instance Pretty (MatchCase a) where
+  pretty (MatchCase { case_pattern = pattern, case_body = body }) =
+    text "case" <+> pretty pattern <> colon $+$
+    indent (prettySuite body)
+
+instance Pretty (Pattern a) where
+  pretty (PatternExpr expr) = pretty expr

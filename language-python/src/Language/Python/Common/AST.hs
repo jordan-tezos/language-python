@@ -61,6 +61,9 @@ module Language.Python.Common.AST (
    , CompFor (..), CompForSpan
    , CompIf (..), CompIfSpan
    , CompIter (..), CompIterSpan
+   -- * Patterns (Add this to export the Pattern-related data types)
+   , Pattern (..), PatternSpan
+   , MatchCase (..), MatchCaseSpan
    )
    where
 
@@ -307,6 +310,11 @@ data Statement annot
      , with_body :: Suite annot -- ^ Suite to be managed.
      , stmt_annot :: annot
      }
+   | Match
+    { match_subject :: Expr annot -- ^ The subject expression of the match.
+    , match_cases :: [MatchCase annot] -- ^ The list of cases in the match.
+    , stmt_annot :: annot -- ^ Annotation for the match statement.
+    }
    | AsyncWith
       { with_stmt :: Statement annot -- ^ With statement
       , stmt_annot :: annot
@@ -793,3 +801,28 @@ instance Span AssignOpSpan where
 
 instance Annotated AssignOp where
    annot = assignOp_annot
+
+data Pattern annot = PatternExpr (Expr annot) deriving (Eq,Ord,Show,Typeable,Data,Functor)
+
+instance Annotated Pattern where
+  annot (PatternExpr expr) = annot expr
+
+type PatternSpan = Pattern SrcSpan
+
+instance Span PatternSpan where
+  getSpan = annot
+
+data MatchCase annot = MatchCase
+    { case_pattern :: Pattern annot -- ^ The pattern to match against the subject.
+    , case_body :: Suite annot -- ^ The suite of statements to execute if the pattern matches.
+    , case_annot :: annot -- ^ Annotation for the case.
+    }
+   deriving (Eq,Ord,Show,Typeable,Data,Functor)
+
+instance Annotated MatchCase where
+  annot = case_annot
+
+type MatchCaseSpan = MatchCase SrcSpan
+
+instance Span MatchCaseSpan where
+  getSpan = annot
