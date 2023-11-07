@@ -1,7 +1,7 @@
 -----------------------------------------------------------------------------
 -- |
--- Module      : Language.Python.Common.PrettyToken 
--- Copyright   : (c) 2009 Bernie Pope 
+-- Module      : Language.Python.Common.PrettyToken
+-- Copyright   : (c) 2009 Bernie Pope
 -- License     : BSD-style
 -- Maintainer  : bjpop@csse.unimelb.edu.au
 -- Stability   : experimental
@@ -19,31 +19,31 @@ import Language.Python.Common.Token
 import Language.Python.Common.Pretty
 
 instance Pretty Token where
-   pretty tok = 
+   pretty tok =
       case tok of
         IndentToken {} -> text "indentation"
         DedentToken {} -> text "dedentation"
-        NewlineToken {} -> text "end of line" 
+        NewlineToken {} -> text "end of line"
         LineJoinToken {} -> text "line join"
-        CommentToken { token_literal = str } -> 
+        CommentToken { token_literal = str } ->
            text "comment:" <+> prettyPrefix 10 str
         IdentifierToken { token_literal = str } ->
-           text "identifier:" <+> text str 
-        StringToken { token_literal = str } -> 
+           text "identifier:" <+> text str
+        StringToken { token_literal = str } ->
            text "string:" <+> prettyPrefix 10 str
         ByteStringToken { token_literal = str } ->
            text "byte string:" <+> prettyPrefix 10 str
         UnicodeStringToken { token_literal = str } ->
            text "unicode string:" <+> prettyPrefix 10 str
         IntegerToken { token_literal = str } ->
-           text "integer:" <+> text str 
+           text "integer:" <+> text str
         LongIntegerToken { token_literal = str } ->
-           text "long integer:" <+> text str 
+           text "long integer:" <+> text str
         FloatToken { token_literal = str } ->
-           text "floating point number:" <+> text str 
+           text "floating point number:" <+> text str
         ImaginaryToken { token_literal = str } ->
-           text "imaginary number:" <+> text str 
-        DefToken {} -> text "def" 
+           text "imaginary number:" <+> text str
+        DefToken {} -> text "def"
         WhileToken {} -> text "while"
         IfToken {} -> text "if"
         TrueToken {} -> text "True"
@@ -52,11 +52,11 @@ instance Pretty Token where
         TryToken {} -> text "try"
         ExceptToken {} -> text "except"
         RaiseToken {} -> text "raise"
-        InToken {} -> text "in" 
-        IsToken {} -> text "is" 
-        LambdaToken {} -> text "lambda" 
-        ClassToken {} -> text "class"                       
-        FinallyToken {} -> text "finally"                     
+        InToken {} -> text "in"
+        IsToken {} -> text "is"
+        LambdaToken {} -> text "lambda"
+        ClassToken {} -> text "class"
+        FinallyToken {} -> text "finally"
         NoneToken {} -> text "None"
         ForToken {} -> text "for"
         FromToken {} -> text "from"
@@ -87,7 +87,7 @@ instance Pretty Token where
         RightSquareBracketToken {} -> text "]"
         LeftBraceToken {} -> text "{"
         RightBraceToken {} -> text "}"
-        DotToken {} -> text "." 
+        DotToken {} -> text "."
         CommaToken {} -> text ","
         SemiColonToken {} -> text ";"
         ColonToken {} -> text ":"
@@ -110,20 +110,20 @@ instance Pretty Token where
         BackQuoteToken {} -> text "` (back quote)"
         PlusToken {} -> text "+"
         MinusToken {} -> text "-"
-        MultToken {} -> text "*" 
+        MultToken {} -> text "*"
         DivToken {} -> text "/"
         GreaterThanToken {} -> text ">"
         LessThanToken {} -> text "<"
         EqualityToken {} -> text "=="
         GreaterThanEqualsToken {} -> text ">="
         LessThanEqualsToken {} -> text "<="
-        ExponentToken {} -> text "**" 
+        ExponentToken {} -> text "**"
         BinaryOrToken {} -> text "|"
         XorToken {} -> text "^"
         BinaryAndToken {} -> text "&"
         ShiftLeftToken {} -> text "<<"
         ShiftRightToken {} -> text ">>"
-        ModuloToken {} -> text "%" 
+        ModuloToken {} -> text "%"
         FloorDivToken {} -> text "//"
         TildeToken {} -> text "~"
         NotEqualsToken {} -> text "!="

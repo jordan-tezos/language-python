@@ -1,8 +1,8 @@
 {
 -----------------------------------------------------------------------------
 -- |
--- Module      : Language.Python.Version3.Parser.Lexer 
--- Copyright   : (c) 2009 Bernie Pope 
+-- Module      : Language.Python.Version3.Parser.Lexer
+-- Copyright   : (c) 2009 Bernie Pope
 -- License     : BSD-style
 -- Maintainer  : bjpop@csse.unimelb.edu.au
 -- Stability   : experimental
@@ -12,7 +12,7 @@
 -- alex. Edited by Curran McConnell to conform to PEP515.
 -----------------------------------------------------------------------------
 
-module Language.Python.Version3.Parser.Lexer 
+module Language.Python.Version3.Parser.Lexer
    (initStartCodeStack, lexToken, endOfFileToken, lexCont) where
 
 import Language.Python.Common.Token
@@ -34,7 +34,7 @@ $digit    = 0-9
 $non_zero_digit = 1-9
 $oct_digit = 0-7
 $hex_digit = [$digit a-fA-F]
-$bin_digit = 0-1 
+$bin_digit = 0-1
 $short_str_char = [^ \n \r ' \" \\]
 $long_str_char = [. \n] # [' \"]
 $short_byte_str_char = \0-\127 # [\n \r ' \" \\]
@@ -49,7 +49,7 @@ $not_double_quote = [. \n] # \"
 @point_float = (@int_part? @fraction) | @int_part \.
 @exponent_float = (@int_part | @point_float) @exponent
 @float_number = @point_float | @exponent_float
-@eol_pattern = $lf | $cr $lf | $cr $lf  
+@eol_pattern = $lf | $cr $lf | $cr $lf
 @one_single_quote = ' $not_single_quote
 @two_single_quotes = '' $not_single_quote
 @one_double_quote = \" $not_double_quote
@@ -75,14 +75,14 @@ tokens :-
 
 -- these rules below could match inside a string literal, but they
 -- will not be applied because the rule for the literal will always
--- match a longer sequence of characters. 
+-- match a longer sequence of characters.
 
-\# ($not_eol_char)* { token (\ span lit val -> CommentToken span lit) id } 
-$white_no_nl+  ;  -- skip whitespace 
+\# ($not_eol_char)* { token (\ span lit val -> CommentToken span lit) id }
+$white_no_nl+  ;  -- skip whitespace
 
--- \\ @eol_pattern ; -- line join 
--- \\ @eol_pattern { endOfLine lexToken } -- line join 
-\\ @eol_pattern { lineJoin } -- line join 
+-- \\ @eol_pattern ; -- line join
+-- \\ @eol_pattern { endOfLine lexToken } -- line join
+\\ @eol_pattern { lineJoin } -- line join
 
 <0> {
    @float_number { token FloatToken (readFloat.delUnderscores) }
@@ -94,7 +94,7 @@ $white_no_nl+  ;  -- skip whitespace
    0 (b | B) (_?$bin_digit+)+ { token IntegerToken (readBinary.delUnderscores) }
 }
 
--- String literals 
+-- String literals
 
 <0> {
    ' @short_str_item_single* ' { mkString stringToken }
@@ -140,14 +140,14 @@ $white_no_nl+  ;  -- skip whitespace
 -- that should be improved).
 
 <0> {
-   @eol_pattern     { bolEndOfLine lexToken bol }  
+   @eol_pattern     { bolEndOfLine lexToken bol }
 }
 
 <dedent> ()                             { dedentation lexToken }
 
 -- beginning of line
 <bol> {
-   @eol_pattern                         { endOfLine lexToken } 
+   @eol_pattern                         { endOfLine lexToken }
    ()                                   { indentation lexToken dedent BOL }
 }
 
@@ -207,7 +207,7 @@ $white_no_nl+  ;  -- skip whitespace
     "^="  { symbolToken BinXorAssignToken }
     "<<=" { symbolToken LeftShiftAssignToken }
     ">>=" { symbolToken RightShiftAssignToken }
-    "//=" { symbolToken FloorDivAssignToken } 
+    "//=" { symbolToken FloorDivAssignToken }
     "@="  { symbolToken MatrixMultAssignToken }
     ","   { symbolToken CommaToken }
     "@"   { symbolToken AtToken }
@@ -229,14 +229,14 @@ lexToken = do
        -- Ensure there is a newline token before the EOF
        previousToken <- getLastToken
        case previousToken of
-          NewlineToken {} -> do 
+          NewlineToken {} -> do
              -- Ensure that there is sufficient dedent
              -- tokens for the outstanding indentation
              -- levels
              depth <- getIndentStackDepth
-             if depth <= 1 
+             if depth <= 1
                 then return endOfFileToken
-                else do 
+                else do
                    popIndent
                    return dedentToken
           other -> do
@@ -245,13 +245,13 @@ lexToken = do
              return insertedNewlineToken
     AlexError _ -> lexicalError
     AlexSkip (nextLocation, _bs, rest) len -> do
-       setLocation nextLocation 
-       setInput rest 
+       setLocation nextLocation
+       setInput rest
        lexToken
     AlexToken (nextLocation, _bs, rest) len action -> do
-       setLocation nextLocation 
-       setInput rest 
-       token <- action (mkSrcSpan location $ decColumn 1 nextLocation) len input 
+       setLocation nextLocation
+       setInput rest
+       token <- action (mkSrcSpan location $ decColumn 1 nextLocation) len input
        setLastToken token
        return token
 
@@ -275,11 +275,11 @@ keywordOrIdent :: String -> SrcSpan -> P Token
 keywordOrIdent str location
    = return $ case Map.lookup str keywords of
          Just symbol -> symbol location
-         Nothing -> IdentifierToken location str  
+         Nothing -> IdentifierToken location str
 
 -- mapping from strings to keywords
-keywords :: Map.Map String (SrcSpan -> Token) 
-keywords = Map.fromList keywordNames 
+keywords :: Map.Map String (SrcSpan -> Token)
+keywords = Map.fromList keywordNames
 
 keywordNames :: [(String, SrcSpan -> Token)]
 keywordNames =

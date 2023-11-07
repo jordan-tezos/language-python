@@ -1,8 +1,8 @@
 {-# LANGUAGE CPP, DeriveDataTypeable #-}
 -----------------------------------------------------------------------------
 -- |
--- Module      : Language.Python.Common.Token 
--- Copyright   : (c) 2009 Bernie Pope 
+-- Module      : Language.Python.Common.Token
+-- Copyright   : (c) 2009 Bernie Pope
 -- License     : BSD-style
 -- Maintainer  : bjpop@csse.unimelb.edu.au
 -- Stability   : experimental
@@ -12,8 +12,8 @@
 -- version 2 and version 3 of Python (they are mostly the same).
 -----------------------------------------------------------------------------
 
-module Language.Python.Common.Token ( 
-   -- * The tokens 
+module Language.Python.Common.Token (
+   -- * The tokens
    Token (..),
    -- * String conversion
    debugTokenString,
@@ -29,7 +29,7 @@ import Language.Python.Common.SrcLocation (SrcSpan (..), Span(getSpan))
 import Data.Data
 
 -- | Lexical tokens.
-data Token 
+data Token
    -- Whitespace
    = IndentToken { token_span :: !SrcSpan }                       -- ^ Indentation: increase.
    | DedentToken { token_span :: !SrcSpan }                       -- ^ Indentation: decrease.
@@ -39,7 +39,7 @@ data Token
    -- Comment
    | CommentToken { token_span :: !SrcSpan, token_literal :: !String } -- ^ Single line comment.
 
-   -- Identifiers 
+   -- Identifiers
    | IdentifierToken { token_span :: !SrcSpan, token_literal :: !String }            -- ^ Identifier.
 
    -- Literals
@@ -52,7 +52,7 @@ data Token
    | ImaginaryToken { token_span :: !SrcSpan, token_literal :: !String, token_double :: !Double }                 -- ^ Literal: imaginary number.
 
    -- Keywords
-   | DefToken { token_span :: !SrcSpan }                          -- ^ Keyword: \'def\'. 
+   | DefToken { token_span :: !SrcSpan }                          -- ^ Keyword: \'def\'.
    | WhileToken { token_span :: !SrcSpan }                        -- ^ Keyword: \'while\'.
    | IfToken { token_span :: !SrcSpan }                           -- ^ Keyword: \'if\'.
    | TrueToken { token_span :: !SrcSpan }                         -- ^ Keyword: \'True\'.
@@ -66,7 +66,7 @@ data Token
    | LambdaToken { token_span :: !SrcSpan }                       -- ^ Keyword: \'lambda\'.
    | ClassToken { token_span :: !SrcSpan }                        -- ^ Keyword: \'class\'.
    | FinallyToken { token_span :: !SrcSpan }                      -- ^ Keyword: \'finally\'.
-   | NoneToken { token_span :: !SrcSpan }                         -- ^ Keyword: \'None\'. 
+   | NoneToken { token_span :: !SrcSpan }                         -- ^ Keyword: \'None\'.
    | ForToken { token_span :: !SrcSpan }                          -- ^ Keyword: \'for\'.
    | FromToken { token_span :: !SrcSpan }                         -- ^ Keyword: \'from\'.
    | GlobalToken { token_span :: !SrcSpan }                       -- ^ Keyword: \'global\'.
@@ -93,7 +93,7 @@ data Token
    | ExecToken { token_span :: !SrcSpan }                         -- ^ Keyword: \'exec\'. (Python 2.x only)
 
    -- Delimiters
-   | AtToken { token_span :: !SrcSpan }                           -- ^ Delimiter: at sign \'\@\'. 
+   | AtToken { token_span :: !SrcSpan }                           -- ^ Delimiter: at sign \'\@\'.
    | LeftRoundBracketToken { token_span :: !SrcSpan }             -- ^ Delimiter: left round bracket \'(\'.
    | RightRoundBracketToken { token_span :: !SrcSpan }            -- ^ Delimiter: right round bracket \')\'.
    | LeftSquareBracketToken { token_span :: !SrcSpan }            -- ^ Delimiter: left square bracket \'[\'.
@@ -145,13 +145,13 @@ data Token
    | NotEqualsV2Token { token_span :: !SrcSpan }                  -- ^ Operator: not-equals \'<>\'. Version 2 only.
 
    -- Special cases
-   | EOFToken { token_span :: !SrcSpan }                          -- ^ End of file 
+   | EOFToken { token_span :: !SrcSpan }                          -- ^ End of file
    deriving (Eq,Ord,Show,Typeable,Data)
 
 instance Span Token where
-  getSpan = token_span 
-   
--- | Produce a string from a token containing detailed information. Mainly intended for debugging. 
+  getSpan = token_span
+
+-- | Produce a string from a token containing detailed information. Mainly intended for debugging.
 debugTokenString :: Token -> String
 debugTokenString token =
    render (text (show $ toConstr token) <+> pretty (token_span token) <+>
@@ -161,15 +161,15 @@ debugTokenString token =
 hasLiteral :: Token -> Bool
 hasLiteral token =
    case token of
-      CommentToken {}       -> True 
-      IdentifierToken {}    -> True 
-      StringToken {}        -> True 
+      CommentToken {}       -> True
+      IdentifierToken {}    -> True
+      StringToken {}        -> True
       ByteStringToken {}    -> True
       UnicodeStringToken {} -> True
-      IntegerToken {}       -> True 
-      LongIntegerToken {}   -> True 
-      FloatToken {}         -> True 
-      ImaginaryToken  {}    -> True 
+      IntegerToken {}       -> True
+      LongIntegerToken {}   -> True
+      FloatToken {}         -> True
+      ImaginaryToken  {}    -> True
       other                 -> False
 
 -- | Classification of tokens
@@ -179,124 +179,124 @@ data TokenClass
    | Identifier
    | Punctuation
    | Bracket
-   | Layout 
+   | Layout
    | Keyword
    | String
    | Operator
    | Assignment
    deriving (Show, Eq, Ord)
 
-classifyToken :: Token -> TokenClass 
-classifyToken token = 
+classifyToken :: Token -> TokenClass
+classifyToken token =
    case token of
-      IndentToken {} -> Layout 
-      DedentToken {} -> Layout 
-      NewlineToken {} -> Layout 
-      CommentToken {} -> Comment 
-      IdentifierToken {} -> Identifier 
-      StringToken {} -> String 
+      IndentToken {} -> Layout
+      DedentToken {} -> Layout
+      NewlineToken {} -> Layout
+      CommentToken {} -> Comment
+      IdentifierToken {} -> Identifier
+      StringToken {} -> String
       ByteStringToken {} -> String
       UnicodeStringToken {} -> String
-      IntegerToken {} -> Number 
-      LongIntegerToken {} -> Number 
-      FloatToken {} -> Number 
-      ImaginaryToken {} -> Number 
-      DefToken {} -> Keyword 
-      WhileToken {} -> Keyword 
+      IntegerToken {} -> Number
+      LongIntegerToken {} -> Number
+      FloatToken {} -> Number
+      ImaginaryToken {} -> Number
+      DefToken {} -> Keyword
+      WhileToken {} -> Keyword
       IfToken {} ->  Keyword
-      TrueToken {} -> Keyword 
-      FalseToken {} -> Keyword 
-      ReturnToken {} -> Keyword 
-      TryToken {} -> Keyword 
-      ExceptToken {} -> Keyword 
-      RaiseToken {} -> Keyword 
-      InToken {} -> Keyword 
-      IsToken {} -> Keyword 
-      LambdaToken {} -> Keyword 
-      ClassToken {} -> Keyword 
-      FinallyToken {} -> Keyword 
-      NoneToken {} -> Keyword 
-      ForToken {} -> Keyword 
-      FromToken {} -> Keyword 
-      GlobalToken {} -> Keyword 
-      WithToken {} -> Keyword 
-      AsToken {} -> Keyword 
-      ElifToken {} -> Keyword 
-      YieldToken {} -> Keyword 
+      TrueToken {} -> Keyword
+      FalseToken {} -> Keyword
+      ReturnToken {} -> Keyword
+      TryToken {} -> Keyword
+      ExceptToken {} -> Keyword
+      RaiseToken {} -> Keyword
+      InToken {} -> Keyword
+      IsToken {} -> Keyword
+      LambdaToken {} -> Keyword
+      ClassToken {} -> Keyword
+      FinallyToken {} -> Keyword
+      NoneToken {} -> Keyword
+      ForToken {} -> Keyword
+      FromToken {} -> Keyword
+      GlobalToken {} -> Keyword
+      WithToken {} -> Keyword
+      AsToken {} -> Keyword
+      ElifToken {} -> Keyword
+      YieldToken {} -> Keyword
       AsyncToken {} -> Keyword
       AwaitToken {} -> Keyword
-      AssertToken {} -> Keyword 
-      ImportToken {} -> Keyword 
-      PassToken {} -> Keyword 
-      BreakToken {} -> Keyword 
-      ContinueToken {} -> Keyword 
+      AssertToken {} -> Keyword
+      ImportToken {} -> Keyword
+      PassToken {} -> Keyword
+      BreakToken {} -> Keyword
+      ContinueToken {} -> Keyword
       DeleteToken {} -> Keyword
-      ElseToken {} -> Keyword 
-      NotToken {} -> Keyword 
-      AndToken {} -> Keyword 
-      OrToken {} -> Keyword 
-      NonLocalToken {} -> Keyword 
-      PrintToken {} -> Keyword 
-      ExecToken {} -> Keyword 
-      AtToken {} -> Keyword 
-      LeftRoundBracketToken {} -> Bracket 
-      RightRoundBracketToken {} -> Bracket 
-      LeftSquareBracketToken {} -> Bracket 
-      RightSquareBracketToken {} -> Bracket 
-      LeftBraceToken {} -> Bracket 
-      RightBraceToken {} -> Bracket 
-      DotToken {} -> Operator 
-      CommaToken {} -> Punctuation 
-      SemiColonToken {} -> Punctuation 
-      ColonToken {} -> Punctuation 
+      ElseToken {} -> Keyword
+      NotToken {} -> Keyword
+      AndToken {} -> Keyword
+      OrToken {} -> Keyword
+      NonLocalToken {} -> Keyword
+      PrintToken {} -> Keyword
+      ExecToken {} -> Keyword
+      AtToken {} -> Keyword
+      LeftRoundBracketToken {} -> Bracket
+      RightRoundBracketToken {} -> Bracket
+      LeftSquareBracketToken {} -> Bracket
+      RightSquareBracketToken {} -> Bracket
+      LeftBraceToken {} -> Bracket
+      RightBraceToken {} -> Bracket
+      DotToken {} -> Operator
+      CommaToken {} -> Punctuation
+      SemiColonToken {} -> Punctuation
+      ColonToken {} -> Punctuation
       EllipsisToken {} -> Keyword  -- What kind of thing is an ellipsis?
-      RightArrowToken {} -> Punctuation 
-      AssignToken {} -> Assignment 
-      PlusAssignToken {} -> Assignment 
-      MinusAssignToken {} -> Assignment  
-      MultAssignToken {} -> Assignment 
-      DivAssignToken {} -> Assignment 
-      ModAssignToken {} -> Assignment  
-      PowAssignToken {} -> Assignment 
-      BinAndAssignToken {} -> Assignment 
-      BinOrAssignToken {} -> Assignment 
-      BinXorAssignToken {} -> Assignment 
-      LeftShiftAssignToken {} -> Assignment 
-      RightShiftAssignToken {} -> Assignment 
-      FloorDivAssignToken {} -> Assignment 
+      RightArrowToken {} -> Punctuation
+      AssignToken {} -> Assignment
+      PlusAssignToken {} -> Assignment
+      MinusAssignToken {} -> Assignment
+      MultAssignToken {} -> Assignment
+      DivAssignToken {} -> Assignment
+      ModAssignToken {} -> Assignment
+      PowAssignToken {} -> Assignment
+      BinAndAssignToken {} -> Assignment
+      BinOrAssignToken {} -> Assignment
+      BinXorAssignToken {} -> Assignment
+      LeftShiftAssignToken {} -> Assignment
+      RightShiftAssignToken {} -> Assignment
+      FloorDivAssignToken {} -> Assignment
       MatrixMultAssignToken {} -> Assignment
-      BackQuoteToken {} -> Punctuation 
-      PlusToken {} -> Operator 
-      MinusToken {} -> Operator 
-      MultToken {} -> Operator 
-      DivToken {} -> Operator 
-      GreaterThanToken {} -> Operator 
-      LessThanToken {} -> Operator 
-      EqualityToken {} -> Operator 
-      GreaterThanEqualsToken {} -> Operator 
-      LessThanEqualsToken {} -> Operator 
-      ExponentToken {} -> Operator 
-      BinaryOrToken {} -> Operator 
-      XorToken {} -> Operator 
-      BinaryAndToken {} -> Operator 
-      ShiftLeftToken {} -> Operator 
-      ShiftRightToken {} -> Operator 
-      ModuloToken {} -> Operator 
-      FloorDivToken {} -> Operator 
-      TildeToken {} -> Operator 
-      NotEqualsToken {} -> Operator 
-      NotEqualsV2Token {} -> Operator 
-      LineJoinToken {} -> Layout 
+      BackQuoteToken {} -> Punctuation
+      PlusToken {} -> Operator
+      MinusToken {} -> Operator
+      MultToken {} -> Operator
+      DivToken {} -> Operator
+      GreaterThanToken {} -> Operator
+      LessThanToken {} -> Operator
+      EqualityToken {} -> Operator
+      GreaterThanEqualsToken {} -> Operator
+      LessThanEqualsToken {} -> Operator
+      ExponentToken {} -> Operator
+      BinaryOrToken {} -> Operator
+      XorToken {} -> Operator
+      BinaryAndToken {} -> Operator
+      ShiftLeftToken {} -> Operator
+      ShiftRightToken {} -> Operator
+      ModuloToken {} -> Operator
+      FloorDivToken {} -> Operator
+      TildeToken {} -> Operator
+      NotEqualsToken {} -> Operator
+      NotEqualsV2Token {} -> Operator
+      LineJoinToken {} -> Layout
       EOFToken {} -> Layout  -- maybe a spurious classification.
 
 -- | Produce a string from a token which is suitable for printing as Python concrete syntax.
 -- /Invisible/ tokens yield an empty string.
 tokenString :: Token -> String
-tokenString token = 
+tokenString token =
    case token of
-      IndentToken {} -> "" 
+      IndentToken {} -> ""
       DedentToken {} -> ""
-      NewlineToken {} -> "" 
+      NewlineToken {} -> ""
       CommentToken {} -> token_literal token
       IdentifierToken {} -> token_literal token
       StringToken {} -> token_literal token
@@ -326,14 +326,14 @@ tokenString token =
       GlobalToken {} -> "global"
       WithToken {} -> "with"
       AsToken {} -> "as"
-      ElifToken {} -> "elif" 
+      ElifToken {} -> "elif"
       YieldToken {} -> "yield"
       AsyncToken {} -> "async"
       AwaitToken {} -> "await"
-      AssertToken {} -> "assert" 
+      AssertToken {} -> "assert"
       ImportToken {} -> "import"
-      PassToken {} -> "pass" 
-      BreakToken {} -> "break" 
+      PassToken {} -> "pass"
+      BreakToken {} -> "break"
       ContinueToken {} -> "continue"
       DeleteToken {} -> "delete"
       ElseToken {} -> "else"
@@ -368,7 +368,7 @@ tokenString token =
       BinXorAssignToken {} -> "^="
       LeftShiftAssignToken {} -> "<<="
       RightShiftAssignToken {} -> ">>="
-      FloorDivAssignToken {} -> "//=" 
+      FloorDivAssignToken {} -> "//="
       MatrixMultAssignToken {} -> "@="
       BackQuoteToken {} -> "`"
       PlusToken {} -> "+"
